@@ -107,6 +107,7 @@ The other functionality that our application has is that it can take the informa
  - Hemoglobin count
  - Respiratory rate
  - Temperature
+
 Finally, once we upload the data we can see a message whether the patient information, Admission, diagnosis, lab data, and vitals information was stored successfully or not. For whatever number of patients the user has uploaded the data, they can see the entire analytics for all those patients, similar to the MIMIC cohort. They can see for their own cohort the user data diagnosis analytics, the corresponding chi-squared test, t-test, the frequency plots, the vital data analytics, then the lab report, data analytics and so on. And finally, they can delete all the data that they have just uploaded in order to maintain the security of their data. We have SQL queries that query out particular user tables’ data. And when they exit this tool, these user tables will be wiped off for any other new user. For this task, we have created another function called delete_all_user_data containing MySQL queries . When they exit this wipes off all the databases or all, the temporary tables from the databases.
 
 ### Tech Stack Used
