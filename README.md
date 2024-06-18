@@ -14,19 +14,21 @@ Since this data is highly structured and relational, MySQL has been utilized.
 
 ## Architecture Design (Flow Diagram and its description)
 
+![architecture](https://github.com/RohanBh23/Distributed-EHR-Tool-with-MIMIC3-Data/assets/78695257/0de70311-eb24-4243-b44c-cda400aa5aef)
+
 In the above flow diagram, the data was initially imported from our five CSV files. In order to do so the subject id for each row in each of the CSV files was read and stripped for its last digit. This digit (0-9) determines which of the 10 databases (yellow triangles) that subject ID would be sent to. Within each of these Databases are pre-created tables - admissions, labevents, chartevents, patients, and diagnoses - which correspond to the five CSV files. The tables prefixed with “user_” are temporary data store files utilized by the Front End Application as can be seen in the bottom right of the diagram. The data is then further utilized by the Database Manager and User Application to perform their various functionalities as seen in our Implementation video. Each of these functionalities is dependent on the Subject ID for efficient data retrieval as this was utilized in our initial hash function.
 
 The implementation begins with identifying the most relevant CSV files for our end goal. While we previously identified a few files in our proposal as seen in section 2, we conducted further analysis of what would be needed to achieve our goals. Our team pivoted our decision in the files as we found the following files and their structures to be of utmost importance.
 
-PATIENTS (Subject_ID, gender, dob, dod, dod_hosp, dod_ssn, expire_flag)
+ - PATIENTS (Subject_ID, gender, dob, dod, dod_hosp, dod_ssn, expire_flag)
 
-ADMISSIONS (Subject_ID, hadm_id, admittime, dischtime, deathtime, admission_type, admissions_location, discharge_location, insurance, language, religion, marital_status, ethnicity, edregtime, diagnosis, hospital_expire_flag, has_chartevents_data)
+ - ADMISSIONS (Subject_ID, hadm_id, admittime, dischtime, deathtime, admission_type, admissions_location, discharge_location, insurance, language, religion, marital_status, ethnicity, edregtime, diagnosis, hospital_expire_flag, has_chartevents_data)
 
-D_ICD_DIAGNOSES (icd9_code, short_title, long_title, subject_id, hadm_id, seq_num)
+ - D_ICD_DIAGNOSES (icd9_code, short_title, long_title, subject_id, hadm_id, seq_num)
 
-LABEVENTS  (Subject_ID, hadm_id, itemid, charttime, value, valuenum, valueuom, flag, label, fluid, category, Ionic_code)
+ - LABEVENTS  (Subject_ID, hadm_id, itemid, charttime, value, valuenum, valueuom, flag, label, fluid, category, Ionic_code)
 
-CHARTEVENTS (Subject_ID, hadm_id, icustay_id, itemid, charrtime, storettime, cgid, value, valuenum, valueuom, warning, error, resultstatus, stopped, label, abbreviation, dbscource, category, unitname, param_type, conceptid)
+ - CHARTEVENTS (Subject_ID, hadm_id, icustay_id, itemid, charrtime, storettime, cgid, value, valuenum, valueuom, warning, error, resultstatus, stopped, label, abbreviation, dbscource, category, unitname, param_type, conceptid)
 
 Since these CSV files follow a highly structured format, our team felt it would be best to utilize MySQL as our database. In order to efficiently store this data in a distributed manner, our next step was to determine a hash key that would partition the above tables across several databases. As seen above, one common attribute found in all of the tables was subject_id which is a five digit unique identifier for each subject. Due to the large amount of data per subject, our team determined it was best to utilize the last digit of the subject id as the hashing method. With this method, query performance is improved by localizing related data, thereby enhancing overall database management and access. As a result of this method, our project will be utilizing 10 databases following the naming convention - DB_# (DB_0, DB_1…DB_9).
 We developed two Python scripts in order to create the databases and the tables as well as insert the data efficiently. In the first script, “sqlscript.py”, we set up a MySQL database environment by creating 10 databases and the relevant tables using SQLAlchemy and PyMySQL libraries to connect to the server. A base URI for the MySQL connection as well as a list of database names was defined and further used to iterate over each database name, connecting to the MySQL server and creating the specified database if it doesn’t already exist. 
@@ -39,11 +41,11 @@ The second script we created, “importcsv.py”, efficiently distributes and in
 
 The database manager effectively uses PyMySQL to connect to the created databases that we can interact with. When the manager is running, it will prompt the user to take one of five different actions:
 
-Insertions
-Bulk Insertions
-Updates
-Deletions 
-Exit the database manager
+ - Insertions
+ - Bulk Insertions
+ - Updates
+ - Deletions 
+ - Exit the database manager
 
 Once the user chooses one of the four options, they have the option to interact with one of the following tables: admissions, diagnoses, chartevents, labevents, and patients.
 
@@ -92,29 +94,29 @@ Here also we have used specific SQL queries to retrieve the required data from t
 Similarly for is the labevents Data analytics. In the lab report we have the WBC that is a white blood cell count and the hemoglobin count measures for the patients. Here also we have produced a t-test which tells us whether the maximum white blood cell count and the minimum hemoglobin count are significant or not significant in determining the status of a patient. This way, all the analytics on the entire MIMIC cohort database were done. 
 User Data Collection Functionality
 The other functionality that our application has is that it can take the information of new users and store it for some time and allow the users to see the analytics report on that data so they can use the analytics report on their data, compare it with the MIMIC data and draw conclusions. Here also we connect to the databases using MySQL connector. Then we take that connection and we obtain the data from the user, the subject ID, gender or date of birth, date of death, and the expiry flag. And we insert into the relevant table that is the user_patient, which stores all this demographic data. We can take a Subject ID from the user, which is different from the MIMIC Subject IDs because this is unique for whatever cohort the user themselves have. Once the Subject ID is input, we get all the most relevant data for statistical analysis; 
-Gender
-Date of birth 
-Date of death 
-Expiry flag
-Date of admission
-Date of discharge
-Hospital ID
-User diagnosis
-Description of that diagnosis
-White blood cell count
-Hemoglobin count
-Respiratory rate
-Temperature
+ - Gender
+- Date of birth 
+ - Date of death 
+ - Expiry flag
+ - Date of admission
+ - Date of discharge
+ - Hospital ID
+ - User diagnosis
+ - Description of that diagnosis
+ - White blood cell count
+ - Hemoglobin count
+ - Respiratory rate
+ - Temperature
 Finally, once we upload the data we can see a message whether the patient information, Admission, diagnosis, lab data, and vitals information was stored successfully or not. For whatever number of patients the user has uploaded the data, they can see the entire analytics for all those patients, similar to the MIMIC cohort. They can see for their own cohort the user data diagnosis analytics, the corresponding chi-squared test, t-test, the frequency plots, the vital data analytics, then the lab report, data analytics and so on. And finally, they can delete all the data that they have just uploaded in order to maintain the security of their data. We have SQL queries that query out particular user tables’ data. And when they exit this tool, these user tables will be wiped off for any other new user. For this task, we have created another function called delete_all_user_data containing MySQL queries . When they exit this wipes off all the databases or all, the temporary tables from the databases.
 
 ### Tech Stack Used
-MySQL -> MySQL Workbench 8.0, MySQL Shell
-Python -> PyMySQL, SQLAlchemy, Streamlit, Plotly, SciPy, Seaborn
-Others -> CSV, JSON, AWS EC2
+ - MySQL -> MySQL Workbench 8.0, MySQL Shell
+ - Python -> PyMySQL, SQLAlchemy, Streamlit, Plotly, SciPy, Seaborn
+ - Others -> CSV, JSON, AWS EC2
 
 ### Learning Outcomes
 
-	This project helped us become proficient in MySQL for data management and retrieval. We also gained a good understanding of the entire pipeline of creating databases and tables to integrate them into frontend applications. Although we learned a lot, we encountered some challenges in the process. For example, understanding the data structure and selecting the most relevant CSV files for our Intensive Care tool proved to be difficult as we had to carefully look through numerous CSV files to identify the most relevant data. In addition, establishing a hashing key for data retrieval in the DB Manager and Front End Application provided some difficulty. After trial and error, we decided that using the last digit of the subject_id as a hash key was the most efficient method as both of our applications operate based on the subject_id.
+This project helped us become proficient in MySQL for data management and retrieval. We also gained a good understanding of the entire pipeline of creating databases and tables to integrate them into frontend applications. Although we learned a lot, we encountered some challenges in the process. For example, understanding the data structure and selecting the most relevant CSV files for our Intensive Care tool proved to be difficult as we had to carefully look through numerous CSV files to identify the most relevant data. In addition, establishing a hashing key for data retrieval in the DB Manager and Front End Application provided some difficulty. After trial and error, we decided that using the last digit of the subject_id as a hash key was the most efficient method as both of our applications operate based on the subject_id.
 
 ## Implementation Steps:
 
@@ -153,18 +155,13 @@ a)	Existing MySQL URI assumes a username “root”, and a password “Dsci-551�
 2)	If applicable, replace the Username and Password structure with your MySQL username and password in the IC_Tool.py file.
 a)	 Existing MySQL URI assumes a username “root”, and a password “Dsci-551”
 3)	Install all required packages using pip install requirements or other commands suitable for your Python environment. 
-4)	Run the python file within the ‘FrontEndApplication’ directory using Streamlit command -
-streamlit run IC_Tool.py
+4)	Run the python file within the ‘FrontEndApplication’ directory using Streamlit command - streamlit run IC_Tool.py
 The application will open on the default browser. It is recommended to use Anaconda Prompt with Jupyter Notebook installed. Or have the streamlit package installed and added in the Python path.
 
-
-
-
-References
+## References
 
 [1] Johnson AEW, Pollard TJ, Shen L, et al. MIMIC-III, a freely accessible critical care database. Sci Data. 2016;3:160035. doi:10.1038/sdata.2016.35
 [2] MIT Laboratory for Computational Physiology. MIMIC-III Clinical Database Documentation. https://mimic.mit.edu/docs/iii/tables/. Accessed May 3, 2024.
 [3] SQLAlchemy. Engines - SQLALCHEMY Documentation. https://docs.sqlalchemy.org/en/20/core/engines.html. Accessed May 3, 2024.
 [4] Valeri L, VanderWeele TJ. SAS Macros for Testing Statistical Mediation in Data with Binary Mediators or Outcomes. Epidemiology. 2013;24(6):878-885. doi:10.1097/EDE.0b013e31829d524e
 [5] Biau DJ, Kerneis S, Porcher R. Statistics in Brief: The Importance of Sample Size in the Planning and Interpretation of Medical Research. Clin Orthop Relat Res. 2008;466(9):2282-2288. doi:10.1007/s11999-008-0346-9
-
