@@ -37,7 +37,7 @@ For each database, the tables ‘admissions’, ‘chartevents’, ‘labevents�
 
 The second script we created, “importcsv.py”, efficiently distributes and inserts data from multiple CSV files into ten different MySQL databases using the hash function based on the subject ID. We utilized the Pandas library for data manipulation and the SQLAlchemy library to manage database connections. The calculate database function is used to calculate the target database for each record by using the last digit of the subject ID. The insert function reads the data in chunks of 10,000 rows to efficiently handle memory and processes each chunk by applying the hash function. This determines the target database for each row, after which the data is inserted into the corresponding database. This is applied to the five CSV data files, each associated with specific tables and key columns defined by the sqlscript.py. By distributing the data across multiple databases using this hash-based approach, we are optimizing main memory usage while hashing and inserting the data.
 
- ### Database Manager
+ ## Database Manager
 
 The database manager effectively uses PyMySQL to connect to the created databases that we can interact with. When the manager is running, it will prompt the user to take one of five different actions:
 
@@ -57,20 +57,19 @@ In general, however, when attempting to update, the dbmanager will retrieve and 
 
 Finally, for delete operations, this will essentially execute a DELETE query on the id or the subject_id (depending on the table), and it will indicate that the record has been deleted. The user can interact with the DB Manager as much as they desire until they want to exit.
 
-### User Application
+## User Application
 
 MIMIC is a database of ICU patients from a hospital in Massachusetts, where data was collected for all those patients in great detail. The tool, called ‘Intensive Care’ aims to provide a Biostatistical overview of ICU patients’ medical data, so that any ICU practitioner, medical personnel, or even medical researcher can use the analysis to draw conclusions about new ICU admitted patients. If they have the vital signs data of a new batch of patients, they can cross-check with the statistical summary of the vital signs data of the MIMIC cohort patients and evaluate the chances of survival of the patients in the new batch.
 
 The current version of the data that we have used, is a demo version provided by the PhysioNet organization [2], which is open to public access. Every attribute of the patients’ data in this version can be accessed, including their subject ID, Date of Birth, age, etc. No confidentiality of data is being violated here when we access the patients’ data by the Subject ID of our Intensive Care Tool. 
 
-### Functionalities
+## Functionalities
 
-Establishing Python-MySQL connection Functionality
-
+### Establishing Python-MySQL connection Functionality
 We have used MySQL for the database, PyMySQL has been used to connect to this database in the Python application. We have also used MySQL connector and SQLAlchemy for various functions. We have used the Streamlit and Plotly packages to build this application’s front-end. On the back end, we have used the Pandas, NumPy, Matplotlib, and Seaborn libraries. For statistical analysis we have used the table one SciPy, Pandas and some other libraries.
 
 
-#### Search by Subject ID Functionality
+### Search by Subject ID Functionality
 We can search by subject ID of the MIMIC cohort itself. We can enter the subject ID, and see the patient profile corresponding to that ID, the admission history, the diagnosis, the lab events data, and the vitals data. We input the subject ID that we want to query. That Subject ID is hashed and the hash key gives us the specific URL of the database that would contain this particular Subject ID. Using the URL we obtain an engine using the SQLAlchemy library [3], which connects us to that database. 
 
 Once we have established the connection, we can query the data for that Subject ID. We input the Engine, the Subject ID into the function with and a specific SQL query which produces the relevant data, and it results in all the data using this con.execute(text(query)).fetchall() command. 
@@ -110,12 +109,12 @@ The other functionality that our application has is that it can take the informa
 
 Finally, once we upload the data we can see a message whether the patient information, Admission, diagnosis, lab data, and vitals information was stored successfully or not. For whatever number of patients the user has uploaded the data, they can see the entire analytics for all those patients, similar to the MIMIC cohort. They can see for their own cohort the user data diagnosis analytics, the corresponding chi-squared test, t-test, the frequency plots, the vital data analytics, then the lab report, data analytics and so on. And finally, they can delete all the data that they have just uploaded in order to maintain the security of their data. We have SQL queries that query out particular user tables’ data. And when they exit this tool, these user tables will be wiped off for any other new user. For this task, we have created another function called delete_all_user_data containing MySQL queries . When they exit this wipes off all the databases or all, the temporary tables from the databases.
 
-### Tech Stack Used
+## Tech Stack Used
  - MySQL -> MySQL Workbench 8.0, MySQL Shell
  - Python -> PyMySQL, SQLAlchemy, Streamlit, Plotly, SciPy, Seaborn
  - Others -> CSV, JSON, AWS EC2
 
-### Learning Outcomes
+## Learning Outcomes
 
 This project helped us become proficient in MySQL for data management and retrieval. We also gained a good understanding of the entire pipeline of creating databases and tables to integrate them into frontend applications. Although we learned a lot, we encountered some challenges in the process. For example, understanding the data structure and selecting the most relevant CSV files for our Intensive Care tool proved to be difficult as we had to carefully look through numerous CSV files to identify the most relevant data. In addition, establishing a hashing key for data retrieval in the DB Manager and Front End Application provided some difficulty. After trial and error, we decided that using the last digit of the subject_id as a hash key was the most efficient method as both of our applications operate based on the subject_id.
 
