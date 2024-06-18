@@ -162,7 +162,11 @@ The application will open on the default browser. It is recommended to use Anaco
 ## References
 
 [1] Johnson AEW, Pollard TJ, Shen L, et al. MIMIC-III, a freely accessible critical care database. Sci Data. 2016;3:160035. doi:10.1038/sdata.2016.35
+
 [2] MIT Laboratory for Computational Physiology. MIMIC-III Clinical Database Documentation. https://mimic.mit.edu/docs/iii/tables/. Accessed May 3, 2024.
+
 [3] SQLAlchemy. Engines - SQLALCHEMY Documentation. https://docs.sqlalchemy.org/en/20/core/engines.html. Accessed May 3, 2024.
+
 [4] Valeri L, VanderWeele TJ. SAS Macros for Testing Statistical Mediation in Data with Binary Mediators or Outcomes. Epidemiology. 2013;24(6):878-885. doi:10.1097/EDE.0b013e31829d524e
+
 [5] Biau DJ, Kerneis S, Porcher R. Statistics in Brief: The Importance of Sample Size in the Planning and Interpretation of Medical Research. Clin Orthop Relat Res. 2008;466(9):2282-2288. doi:10.1007/s11999-008-0346-9
